@@ -16,6 +16,9 @@ public class TcpVisionDriver : Device, IVisionDevice
     private WatsonTcpClient _client = null!;
     private JsonObject[,] _result = null!;
 
+    public event EventHandler? VisionConnected;
+    public event EventHandler? VisionDisconnected;
+
     public override void Init(Dict config)
     {
         var ip = config.GetValueOrDefault("RemoteIp") as string ?? "127.0.0.1";
@@ -32,12 +35,30 @@ public class TcpVisionDriver : Device, IVisionDevice
         _client.Events.ServerDisconnected += EventsOnServerDisconnected;
         _client.Events.MessageReceived += EventsOnMessageReceived;
 
-        _client.Connect();
+        Connect();
     }
 
     public override void Dispose()
     {
         _client.Dispose();
+    }
+
+    public void Connect()
+    {
+        Logger.Error("Start connecting to the remote.");
+        try
+        {
+            _client.Connect();
+        }
+        catch (System.Net.Sockets.SocketException exception)
+        {
+            Logger.Error("Couldn't connect to the remote.");
+        }
+    }
+
+    public bool IsConnected()
+    {
+        return _client.Connected;
     }
 
     public void Trigger(int channel, int inspectionIndex)
@@ -81,10 +102,22 @@ public class TcpVisionDriver : Device, IVisionDevice
     private void EventsOnServerDisconnected(object? sender, DisconnectionEventArgs e)
     {
         Logger.Info("Disconnected.");
+        OnVisionDisconnected();
     }
 
     private void EventsOnServerConnected(object? sender, ConnectionEventArgs e)
     {
         Logger.Info("Connected.");
+        OnVisionConnected();
+    }
+
+    protected virtual void OnVisionConnected()
+    {
+        VisionConnected?.Invoke(this, EventArgs.Empty);
+    }
+
+    protected virtual void OnVisionDisconnected()
+    {
+        VisionDisconnected?.Invoke(this, EventArgs.Empty);
     }
 }
