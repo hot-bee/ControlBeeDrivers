@@ -1,7 +1,9 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using ControlBeeAbstract.Devices;
+using ControlBeeAbstract.Exceptions;
 using log4net;
 using WatsonTcp;
 using Dict = System.Collections.Generic.Dictionary<string, object?>;
@@ -63,7 +65,12 @@ public class TcpVisionDriver : Device, IVisionDevice
 
     public void Trigger(int channel, int inspectionIndex)
     {
-        Logger.Info($"Start trigger {channel}.");
+        Logger.Info($"Start trigger ({channel}).");
+        if (!IsConnected())
+        {
+            Logger.Error($"Failed to trigger ({channel}). Vision is not connected.");
+            throw new ConnectionError();
+        }
         var payload = new Dict
         {
             ["Name"] = "Trigger",
@@ -79,7 +86,14 @@ public class TcpVisionDriver : Device, IVisionDevice
     public void Wait(int channel, int inspectionIndex, int timeout)
     {
         Logger.Info($"Start wait result {channel}.");
-        while (_busy[channel, inspectionIndex]) Thread.Sleep(1);
+        var stopwatch = new Stopwatch();
+        stopwatch.Start();
+        while (_busy[channel, inspectionIndex])
+        {
+            if (stopwatch.ElapsedMilliseconds > timeout)
+                throw new TimeoutError();
+            Thread.Sleep(1);
+        }
         Logger.Info($"Finished wait result {channel}.");
     }
 
