@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35806.99 d17.13
+VisualStudioVersion = 17.13.35806.99
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TcpVisionDriver", "TcpVisionDriver\TcpVisionDriver.csproj", "{CEFCABD8-C589-4EF7-8099-8D916E3709AF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovensysDriver", "MovensysDriver\MovensysDriver.csproj", "{F43B12F8-2534-010D-1A96-5FC87D410CDC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{CEFCABD8-C589-4EF7-8099-8D916E3709AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CEFCABD8-C589-4EF7-8099-8D916E3709AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CEFCABD8-C589-4EF7-8099-8D916E3709AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F43B12F8-2534-010D-1A96-5FC87D410CDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F43B12F8-2534-010D-1A96-5FC87D410CDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F43B12F8-2534-010D-1A96-5FC87D410CDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F43B12F8-2534-010D-1A96-5FC87D410CDC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
