@@ -102,6 +102,6 @@ public class CAXL
 
 //========== SIIIH =================================================================================
     // SIIIH 마스터 보드에 연결된 모듈에 대한 검색을 시작하는 함수(SIIIH 마스터 보드 전용)
-    // [DllImport("AXL.dll")] public static extern uint AxlScanStartSIIIH(ref _SCAN_RESULT pScanResult);
+    [DllImport("AXL.dll")] public static extern uint AxlScanStartSIIIH(ref _SCAN_RESULT pScanResult);
 }
 
