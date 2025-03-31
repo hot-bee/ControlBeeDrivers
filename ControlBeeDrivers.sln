@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TcpVisionDriver", "TcpVisio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovensysDriver", "MovensysDriver\MovensysDriver.csproj", "{F43B12F8-2534-010D-1A96-5FC87D410CDC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AjinDriver", "AjinDriver\AjinDriver.csproj", "{FBF6F88C-3D11-49D4-B9C7-CFF4B900F7F9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{F43B12F8-2534-010D-1A96-5FC87D410CDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F43B12F8-2534-010D-1A96-5FC87D410CDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F43B12F8-2534-010D-1A96-5FC87D410CDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBF6F88C-3D11-49D4-B9C7-CFF4B900F7F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBF6F88C-3D11-49D4-B9C7-CFF4B900F7F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBF6F88C-3D11-49D4-B9C7-CFF4B900F7F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBF6F88C-3D11-49D4-B9C7-CFF4B900F7F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
