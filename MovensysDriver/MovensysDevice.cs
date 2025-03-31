@@ -180,6 +180,21 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         // TODO
     }
 
+    public void StartECam(int tableIndex, int masterChannel, int slaveChannel, double[] masterPositions, double[] slavePositions)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void StopECam(int tableIndex)
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool IsECamEnabled(int tableIndex)
+    {
+        throw new NotImplementedException();
+    }
+
     public override void Dispose()
     {
         var err = 0;

@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ControlBeeAbstract" Version="0.0.8" />
+    <PackageReference Include="ControlBeeAbstract" Version="0.0.9" />
     <Reference Include="CoreMotionApi_CLRLib">
       <HintPath>C:\Program Files\SoftServo\WMX3\Lib\CoreMotionApi_CLRLib.dll</HintPath>
     </Reference>
