@@ -1,29 +1,53 @@
 ﻿using System.Diagnostics;
-using System.Threading.Channels;
 using ControlBeeAbstract.Devices;
 using ControlBeeAbstract.Exceptions;
 
 namespace AjinDriver;
 
-public class AjinDevice : Device, IMotionDevice
+public class AjinDevice : Device, IMotionDevice, IDigitalIoDevice
 {
+    public bool GetDigitalInputBit(int channel)
+    {
+        uint status = 0;
+        if (CAXD.AxdiReadInport(channel, ref status) != (uint)AXT_FUNC_RESULT.AXT_RT_SUCCESS)
+            throw new DeviceError();
+        return status == 1;
+    }
+
+    public void SetDigitalOutputBit(int channel, bool value)
+    {
+        if (CAXD.AxdoWriteOutport(channel, (uint)(value ? 1 : 0)) !=
+            (uint)AXT_FUNC_RESULT.AXT_RT_SUCCESS)
+            throw new DeviceError();
+    }
+
+    public bool GetDigitalOutputBit(int channel)
+    {
+        uint status = 0;
+        if (CAXD.AxdoReadOutport(channel, ref status) != (uint)AXT_FUNC_RESULT.AXT_RT_SUCCESS)
+            throw new DeviceError();
+        return status == 1;
+    }
+
     public override void Init(Dictionary<string, object?> config)
     {
         if (CAXL.AxlOpen(0) != (uint)AXT_FUNC_RESULT.AXT_RT_SUCCESS)
             throw new DeviceError("Couldn't open AjinDevice.");
 
-        uint status = 0;
-        if (CAXM.AxmInfoIsMotionModule(ref status) != (uint)AXT_FUNC_RESULT.AXT_RT_SUCCESS)
-            throw new DeviceError("Couldn't find MotionModule.");
-        if (status != (uint)AXT_EXISTENCE.STATUS_EXIST)
-            throw new DeviceError("Couldn't find MotionModule.");
-
         var parameterFile = config.GetValueOrDefault("ParameterFile") as string;
         if (!string.IsNullOrEmpty(parameterFile))
-        {
             if (CAXM.AxmMotLoadParaAll(parameterFile) != (uint)AXT_FUNC_RESULT.AXT_RT_SUCCESS)
                 throw new DeviceError();
-        }
+
+        // uint status = 0;
+        // if (CAXM.AxmInfoIsMotionModule(ref status) != (uint)AXT_FUNC_RESULT.AXT_RT_SUCCESS)
+        //     throw new DeviceError("Couldn't find MotionModule.");
+        // if (status != (uint)AXT_EXISTENCE.STATUS_EXIST)
+        //     throw new DeviceError("Couldn't find MotionModule.");
+        //
+        // var dioModuleCount = 0;
+        // if (CAXD.AxdInfoGetModuleCount(ref dioModuleCount) != (uint)AXT_FUNC_RESULT.AXT_RT_SUCCESS)
+        //     throw new DeviceError("Couldn't find DIOModule.");
     }
 
     public override void Dispose()
@@ -201,5 +225,17 @@ public class AjinDevice : Device, IMotionDevice
         if (CAXM.AxmMoveEStop(channel) !=
             (uint)AXT_FUNC_RESULT.AXT_RT_SUCCESS)
             throw new DeviceError();
+    }
+
+    public void SearchZPhase(int channel, double velocity, double acceleration, double distance)
+    {
+        if (CAXM.AxmMoveSignalSearch(channel, velocity, acceleration,
+                (int)AXT_MOTION_QIDETECT_DESTINATION_SIGNAL.Signal_EncodZPhase, (int)AXT_MOTION_EDGE.SIGNAL_HIGH_LEVEL,
+                (int)AXT_MOTION_STOPMODE.EMERGENCY_STOP) != (uint)AXT_FUNC_RESULT.AXT_RT_SUCCESS)
+            throw new DeviceError();
+        while (IsMoving(channel))
+        {
+            Thread.Sleep(1);
+        }
     }
 }
