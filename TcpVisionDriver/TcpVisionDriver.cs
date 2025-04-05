@@ -52,7 +52,7 @@ public class TcpVisionDriver : Device, IVisionDevice
         {
             _client.Connect();
         }
-        catch (System.Net.Sockets.SocketException exception)
+        catch (TimeoutException exception)
         {
             Logger.Error("Couldn't connect to the remote.");
         }
@@ -71,6 +71,7 @@ public class TcpVisionDriver : Device, IVisionDevice
             Logger.Error($"Failed to trigger ({channel}). Vision is not connected.");
             throw new ConnectionError();
         }
+
         var payload = new Dict
         {
             ["Name"] = "Trigger",
@@ -94,6 +95,7 @@ public class TcpVisionDriver : Device, IVisionDevice
                 throw new TimeoutError();
             Thread.Sleep(1);
         }
+
         Logger.Info($"Finished wait result {channel}.");
     }
 
