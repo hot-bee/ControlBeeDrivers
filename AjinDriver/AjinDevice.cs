@@ -70,6 +70,14 @@ public class AjinDevice : Device, IMotionDevice, IDigitalIoDevice
         return status == 1;
     }
 
+    public bool IsAlarmed(int channel)
+    {
+        uint status = 0;
+        if (CAXM.AxmSignalReadServoAlarm(channel, ref status) != (uint)AXT_FUNC_RESULT.AXT_RT_SUCCESS)
+            throw new DeviceError();
+        return status == 1;
+    }
+
     public void TrapezoidalMove(int channel, double position, double velocity, double acceleration, double deceleration)
     {
         throw new NotImplementedException();
