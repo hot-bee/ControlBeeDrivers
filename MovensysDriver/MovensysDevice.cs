@@ -129,6 +129,22 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         return st.AxesStatus[channel].ServoOn;
     }
 
+    public bool IsAlarmed(int channel)
+    {
+        var err = 0;
+        var st = new CoreMotionStatus();
+        err = _coreMotion.GetStatus(ref st);
+        if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
+        return st.AxesStatus[channel].AmpAlarm;
+    }
+
+    public void ClearAlarm(int channel)
+    {
+        var err = 0;
+        err = _coreMotion.AxisControl.ClearAmpAlarm(channel);
+        if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
+    }
+
 
     public void TrapezoidalMove(int channel, double position, double velocity, double acceleration, double deceleration)
     {
