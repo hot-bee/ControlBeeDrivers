@@ -1,4 +1,5 @@
 ﻿using ControlBeeAbstract.Devices;
+using ControlBeeAbstract.Exceptions;
 using WMX3ApiCLR;
 
 namespace MovensysDriver;
@@ -125,11 +126,13 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         var st = new CoreMotionStatus();
         err = _coreMotion.GetStatus(ref st);
         if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
-        return st.AxesStatus[0].ServoOn;
+        return st.AxesStatus[channel].ServoOn;
     }
 
-    public void TrapezoidalMove(int channel, int position, int velocity, int acceleration, int deceleration)
+
+    public void TrapezoidalMove(int channel, double position, double velocity, double acceleration, double deceleration)
     {
+        SetCommandMode(channel, AxisCommandMode.Position);
         var err = 0;
         var pos = new Motion.PosCommand
         {
@@ -140,6 +143,29 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
                 Velocity = velocity,
                 Acc = acceleration,
                 Dec = deceleration
+            },
+            Target = position
+        };
+        err = _coreMotion.Motion.StartPos(pos);
+        if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
+    }
+
+    public void JerkRatioSCurveMove(int channel, double position, double velocity, double acceleration, double deceleration,
+        double accelJerkRatio, double decelJerkRatio)
+    {
+        SetCommandMode(channel, AxisCommandMode.Position);
+        var err = 0;
+        var pos = new Motion.PosCommand
+        {
+            Axis = channel,
+            Profile =
+            {
+                Type = ProfileType.JerkRatio,
+                Velocity = velocity,
+                Acc = acceleration,
+                Dec = deceleration,
+                JerkAccRatio = accelJerkRatio,
+                JerkDecRatio = decelJerkRatio
             },
             Target = position
         };
@@ -167,17 +193,48 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         var st = new CoreMotionStatus();
         err = _coreMotion.GetStatus(ref st);
         if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
-        return st.AxesStatus[0].OpState != OperationState.Idle;
+        return st.AxesStatus[channel].OpState != OperationState.Idle;
     }
 
-    public void SetCommandPosition(double position)
+    public void SetCommandAndActualPosition(int channel, double position)
     {
-        // TODO
+        SetCommandMode(channel, AxisCommandMode.Position);
+        SetCommandPosition(channel, position);
+        SetActualPosition(channel, position);
     }
 
-    public void SetActualPosition(double position)
+    public void SetCommandPosition(int channel, double position)
     {
-        // TODO
+        SetCommandMode(channel, AxisCommandMode.Position);
+        var err = 0;
+        err = _coreMotion.Home.SetCommandPos(channel, position);
+        if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
+    }
+
+    public void SetActualPosition(int channel, double position)
+    {
+        SetCommandMode(channel, AxisCommandMode.Position);
+        var err = 0;
+         err = _coreMotion.Home.SetFeedbackPos(channel, position);
+        if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
+    }
+
+    public double GetCommandPosition(int channel)
+    {
+        var err = 0;
+        var st = new CoreMotionStatus();
+        err = _coreMotion.GetStatus(ref st);
+        if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
+        return st.AxesStatus[channel].PosCmd;
+    }
+
+    public double GetActualPosition(int channel)
+    {
+        var err = 0;
+        var st = new CoreMotionStatus();
+        err = _coreMotion.GetStatus(ref st);
+        if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
+        return st.AxesStatus[channel].ActualPos;
     }
 
     public void StartECam(int tableIndex, int masterChannel, int slaveChannel, double[] masterPositions, double[] slavePositions)
@@ -191,6 +248,110 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
     }
 
     public bool IsECamEnabled(int tableIndex)
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool GetHomeSensor(int channel)
+    {
+        var err = 0;
+        var st = new CoreMotionStatus();
+        err = _coreMotion.GetStatus(ref st);
+        if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
+        return st.AxesStatus[channel].HomeSwitch;
+    }
+
+    public bool GetNegativeLimitSensor(int channel)
+    {
+        var err = 0;
+        var st = new CoreMotionStatus();
+        err = _coreMotion.GetStatus(ref st);
+        if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
+        return st.AxesStatus[channel].NegativeLS;
+    }
+
+    public bool GetPositiveLimitSensor(int channel)
+    {
+        var err = 0;
+        var st = new CoreMotionStatus();
+        err = _coreMotion.GetStatus(ref st);
+        if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
+        return st.AxesStatus[channel].PositiveLS;
+    }
+
+    private void SetCommandMode(int channel, AxisCommandMode mode)
+    {
+        var err = 0;
+        if (GetCommandMode(channel) == mode) return;
+        err = _coreMotion.AxisControl.SetAxisCommandMode(channel, mode);
+        if (err != ErrorCode.None) throw new Exception(CoreMotion.ErrorToString(err));
+    }
+
+    private AxisCommandMode GetCommandMode(int channel)
+    {
+        var err = 0;
+        AxisCommandMode mode = AxisCommandMode.Position;
+        err = _coreMotion.AxisControl.GetAxisCommandMode(channel, ref mode);
+        if (err != ErrorCode.None) throw new Exception(CoreMotion.ErrorToString(err));
+        return mode;
+    }
+
+    public void VelocityMove(int channel, double velocity, double acceleration, double deceleration, double accelJerkRatio,
+        double decelJerkRatio)
+    {
+        SetCommandMode(channel, AxisCommandMode.Velocity);
+        var err = 0;
+        var vel = new Velocity.VelCommand
+        {
+            Axis = channel,
+            Profile =
+            {
+                Type = ProfileType.JerkRatio,
+                Velocity = velocity,
+                Acc = acceleration,
+                Dec = deceleration,
+                JerkAccRatio = accelJerkRatio,
+                JerkDecRatio = decelJerkRatio
+            },
+        };
+        err = _coreMotion.Velocity.StartVel(vel);
+        if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
+    }
+
+    public void Stop(int channel)
+    {
+        var mode = GetCommandMode(channel);
+        switch (mode)
+        {
+            case AxisCommandMode.Position:
+                _coreMotion.Motion.Stop(channel);
+                break;
+            case AxisCommandMode.Velocity:
+                _coreMotion.Velocity.Stop(channel);
+                break;
+            default:
+                throw new ValueError();
+        }
+    }
+
+    public void EStop(int channel)
+    {
+        Stop(channel);
+        //var mode = GetCommandMode(channel);
+        //switch (mode)
+        //{
+        //    case AxisCommandMode.Position:
+        //        _coreMotion.Motion.ExecTimedStop(channel, 0.0);
+        //        break;
+        //    case AxisCommandMode.Velocity:
+        //        _coreMotion.Velocity.ExecTimedStop(channel, 0.0);
+        //        break;
+        //    default:
+        //        throw new ValueError();
+        //}
+    }
+
+    public void SearchZPhase(int channel, double velocity, double acceleration, double distance)
     {
         throw new NotImplementedException();
     }
