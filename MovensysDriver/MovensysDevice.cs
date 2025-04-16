@@ -145,6 +145,14 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
     }
 
+    public void SetTorque(int channel, double torque)
+    {
+        SetCommandMode(channel, AxisCommandMode.Torque);
+        var err = 0;
+        err = _coreMotion.Torque.StartTrq(new Torque.TrqCommand() { Axis = channel, Torque = torque * 100.0 });
+        if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
+    }
+
 
     public void TrapezoidalMove(int channel, double position, double velocity, double acceleration, double deceleration)
     {
@@ -193,14 +201,15 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
     {
         var err = 0;
         err = _coreMotion.Motion.Wait(channel);
-        if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
+        // Except limit touch error
+        if (err != 1572 && err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
     }
 
     public void Wait(int channel, int timeout)
     {
         var err = 0;
         err = _coreMotion.Motion.Wait(channel, (uint)timeout);
-        if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
+        if (err != 1572 && err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
     }
 
     public bool IsMoving(int channel)
