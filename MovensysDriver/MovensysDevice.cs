@@ -271,6 +271,24 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         return st.AxesStatus[channel].ActualPos;
     }
 
+    public double GetCommandVelocity(int channel)
+    {
+        var err = 0;
+        var st = new CoreMotionStatus();
+        err = _coreMotion.GetStatus(ref st);
+        if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
+        return st.AxesStatus[channel].VelocityCmd;
+    }
+
+    public double GetActualVelocity(int channel)
+    {
+        var err = 0;
+        var st = new CoreMotionStatus();
+        err = _coreMotion.GetStatus(ref st);
+        if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
+        return st.AxesStatus[channel].ActualVelocity;
+    }
+
     public void StartECam(int tableIndex, int masterChannel, int slaveChannel, double[] masterPositions, double[] slavePositions)
     {
         throw new NotImplementedException();
