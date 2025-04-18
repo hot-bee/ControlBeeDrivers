@@ -47,6 +47,15 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         _io.SetOutAnalogDataIntEx(channel, value);
     }
 
+    public int GetAnalogInputSignedDWord(int channel)
+    {
+        var err = 0;
+        var data = 0;
+        err = _io.GetInAnalogDataIntEx(channel, ref data);
+        if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
+        return data;
+    }
+
     public byte GetAnalogOutputByte(int channel)
     {
         byte value = 0;
