@@ -78,6 +78,16 @@ public class AjinDevice : Device, IMotionDevice, IDigitalIoDevice
         return status == 1;
     }
 
+    public void ClearAlarm(int channel)
+    {
+        // TODO
+    }
+
+    public void SetTorque(int channel, double torque)
+    {
+        // TODO
+    }
+
     public void TrapezoidalMove(int channel, double position, double velocity, double acceleration, double deceleration)
     {
         throw new NotImplementedException();
@@ -140,6 +150,18 @@ public class AjinDevice : Device, IMotionDevice, IDigitalIoDevice
         if (CAXM.AxmStatusGetActPos(channel, ref pos) != (uint)AXT_FUNC_RESULT.AXT_RT_SUCCESS)
             throw new DeviceError();
         return pos;
+    }
+
+    public double GetCommandVelocity(int channel)
+    {
+        // TODO
+        return 0;
+    }
+
+    public double GetActualVelocity(int channel)
+    {
+        // TODO
+        return 0;
     }
 
     public void StartECam(int tableIndex, int masterChannel, int slaveChannel, double[] masterPositions,
