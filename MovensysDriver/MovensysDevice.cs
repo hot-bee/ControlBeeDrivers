@@ -47,6 +47,13 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         _io.SetOutAnalogDataIntEx(channel, value);
     }
 
+    public uint GetAnalogInputDWord(int channel)
+    {
+        uint value = 0;
+        _io.GetInAnalogDataUIntEx(channel, ref value);
+        return value;
+    }
+
     public int GetAnalogInputSignedDWord(int channel)
     {
         var err = 0;
@@ -96,6 +103,34 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         // ReSharper disable once SuggestVarOrType_BuiltInTypes
         int value = 0;
         _io.GetInAnalogDataIntEx(channel, ref value);
+        return value;
+    }
+
+    public byte GetAnalogInputByte(int channel)
+    {
+        byte value = 0;
+        _io.GetInAnalogDataUCharEx(channel, ref value);
+        return value;
+    }
+
+    public sbyte GetAnalogInputSignedByte(int channel)
+    {
+        sbyte value = 0;
+        _io.GetInAnalogDataCharEx(channel, ref value);
+        return value;
+    }
+
+    public ushort GetAnalogInputWord(int channel)
+    {
+        ushort value = 0;
+        _io.GetInAnalogDataUShortEx(channel, ref value);
+        return value;
+    }
+
+    public short GetAnalogInputSignedWord(int channel)
+    {
+        short value = 0;
+        _io.GetInAnalogDataShortEx(channel, ref value);
         return value;
     }
 
@@ -158,7 +193,7 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
     {
         SetCommandMode(channel, AxisCommandMode.Torque);
         var err = 0;
-        err = _coreMotion.Torque.StartTrq(new Torque.TrqCommand() { Axis = channel, Torque = torque * 100.0 });
+        err = _coreMotion.Torque.StartTrq(new Torque.TrqCommand { Axis = channel, Torque = torque * 100.0 });
         if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
     }
 
@@ -183,7 +218,8 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
     }
 
-    public void JerkRatioSCurveMove(int channel, double position, double velocity, double acceleration, double deceleration,
+    public void JerkRatioSCurveMove(int channel, double position, double velocity, double acceleration,
+        double deceleration,
         double accelJerkRatio, double decelJerkRatio)
     {
         SetCommandMode(channel, AxisCommandMode.Position);
@@ -249,7 +285,7 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
     {
         SetCommandMode(channel, AxisCommandMode.Position);
         var err = 0;
-         err = _coreMotion.Home.SetFeedbackPos(channel, position);
+        err = _coreMotion.Home.SetFeedbackPos(channel, position);
         if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
     }
 
@@ -289,7 +325,8 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         return st.AxesStatus[channel].ActualVelocity;
     }
 
-    public void StartECam(int tableIndex, int masterChannel, int slaveChannel, double[] masterPositions, double[] slavePositions)
+    public void StartECam(int tableIndex, int masterChannel, int slaveChannel, double[] masterPositions,
+        double[] slavePositions)
     {
         throw new NotImplementedException();
     }
@@ -331,24 +368,8 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         return st.AxesStatus[channel].PositiveLS;
     }
 
-    private void SetCommandMode(int channel, AxisCommandMode mode)
-    {
-        var err = 0;
-        if (GetCommandMode(channel) == mode) return;
-        err = _coreMotion.AxisControl.SetAxisCommandMode(channel, mode);
-        if (err != ErrorCode.None) throw new Exception(CoreMotion.ErrorToString(err));
-    }
-
-    private AxisCommandMode GetCommandMode(int channel)
-    {
-        var err = 0;
-        AxisCommandMode mode = AxisCommandMode.Position;
-        err = _coreMotion.AxisControl.GetAxisCommandMode(channel, ref mode);
-        if (err != ErrorCode.None) throw new Exception(CoreMotion.ErrorToString(err));
-        return mode;
-    }
-
-    public void VelocityMove(int channel, double velocity, double acceleration, double deceleration, double accelJerkRatio,
+    public void VelocityMove(int channel, double velocity, double acceleration, double deceleration,
+        double accelJerkRatio,
         double decelJerkRatio)
     {
         SetCommandMode(channel, AxisCommandMode.Velocity);
@@ -364,7 +385,7 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
                 Dec = deceleration,
                 JerkAccRatio = accelJerkRatio,
                 JerkDecRatio = decelJerkRatio
-            },
+            }
         };
         err = _coreMotion.Velocity.StartVel(vel);
         if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
@@ -433,6 +454,23 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         var startCommunicationTimeout = config.GetValueOrDefault("StartCommunicationTimeout") as uint? ?? 5000;
         err = _api.StartCommunication(startCommunicationTimeout);
         if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
+    }
+
+    private void SetCommandMode(int channel, AxisCommandMode mode)
+    {
+        var err = 0;
+        if (GetCommandMode(channel) == mode) return;
+        err = _coreMotion.AxisControl.SetAxisCommandMode(channel, mode);
+        if (err != ErrorCode.None) throw new Exception(CoreMotion.ErrorToString(err));
+    }
+
+    private AxisCommandMode GetCommandMode(int channel)
+    {
+        var err = 0;
+        var mode = AxisCommandMode.Position;
+        err = _coreMotion.AxisControl.GetAxisCommandMode(channel, ref mode);
+        if (err != ErrorCode.None) throw new Exception(CoreMotion.ErrorToString(err));
+        return mode;
     }
 
     public string GetErrorMessage(int errorCode)
