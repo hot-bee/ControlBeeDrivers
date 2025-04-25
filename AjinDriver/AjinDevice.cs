@@ -80,7 +80,12 @@ public class AjinDevice : Device, IMotionDevice, IDigitalIoDevice
 
     public void ClearAlarm(int channel)
     {
-        // TODO
+        if (!IsAlarmed(channel)) return;
+        if (CAXM.AxmSignalServoAlarmReset(channel, 1) != (uint)AXT_FUNC_RESULT.AXT_RT_SUCCESS)
+            throw new DeviceError();
+        Thread.Sleep(100);
+        if (CAXM.AxmSignalServoAlarmReset(channel, 0) != (uint)AXT_FUNC_RESULT.AXT_RT_SUCCESS)
+            throw new DeviceError();
     }
 
     public void SetTorque(int channel, double torque)
