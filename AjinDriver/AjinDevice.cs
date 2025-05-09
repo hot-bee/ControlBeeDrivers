@@ -265,12 +265,20 @@ public class AjinDevice : Device, IMotionDevice, IDigitalIoDevice
     public void SearchZPhase(int channel, double velocity, double acceleration, double distance)
     {
         if (CAXM.AxmMoveSignalSearch(channel, velocity, acceleration,
-                (int)AXT_MOTION_QIDETECT_DESTINATION_SIGNAL.Signal_EncodZPhase, (int)AXT_MOTION_EDGE.SIGNAL_HIGH_LEVEL,
+                (int)AXT_MOTION_QIDETECT_DESTINATION_SIGNAL.Signal_EncodZPhase, (int)AXT_MOTION_EDGE.SIGNAL_UP_EDGE,
+                (int)AXT_MOTION_STOPMODE.SLOWDOWN_STOP) != (uint)AXT_FUNC_RESULT.AXT_RT_SUCCESS)
+            throw new DeviceError();
+        while (IsMoving(channel))
+            Thread.Sleep(1);
+        var pos1 = GetCommandPosition(channel);
+        if (CAXM.AxmMoveSignalSearch(channel, -velocity / 10.0, acceleration,
+                (int)AXT_MOTION_QIDETECT_DESTINATION_SIGNAL.Signal_EncodZPhase, (int)AXT_MOTION_EDGE.SIGNAL_DOWN_EDGE,
                 (int)AXT_MOTION_STOPMODE.EMERGENCY_STOP) != (uint)AXT_FUNC_RESULT.AXT_RT_SUCCESS)
             throw new DeviceError();
         while (IsMoving(channel))
-        {
             Thread.Sleep(1);
-        }
+        var pos2 = GetCommandPosition(channel);
+        if(Math.Abs(pos1 - pos2) > 3000.0)  // TODO: Parameterize this tolerance.
+            throw new DeviceError();
     }
 }
