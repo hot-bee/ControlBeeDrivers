@@ -191,6 +191,12 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
 
     public void SetTorque(int channel, double torque)
     {
+        if (torque == 0)
+        {
+            StopTorque(channel);
+            return;
+        }
+
         SetCommandMode(channel, AxisCommandMode.Torque);
         var err = 0;
         err = _coreMotion.Torque.StartTrq(new Torque.TrqCommand { Axis = channel, Torque = torque * 100.0 });
@@ -402,6 +408,9 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
             case AxisCommandMode.Velocity:
                 _coreMotion.Velocity.Stop(channel);
                 break;
+            case AxisCommandMode.Torque:
+                StopTorque(channel);
+                break;
             default:
                 throw new ValueError();
         }
@@ -453,6 +462,14 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
 
         var startCommunicationTimeout = config.GetValueOrDefault("StartCommunicationTimeout") as uint? ?? 5000;
         err = _api.StartCommunication(startCommunicationTimeout);
+        if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
+    }
+
+    private void StopTorque(int channel)
+    {
+        SetCommandMode(channel, AxisCommandMode.Torque);
+        var err = 0;
+        err = _coreMotion.Torque.StopTrq(channel);
         if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
     }
 
