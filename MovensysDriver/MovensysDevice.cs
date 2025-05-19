@@ -8,12 +8,14 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
 {
     private readonly WMX3Api _api;
     private readonly CoreMotion _coreMotion;
+    private readonly AdvancedMotion _advancedMotion;
     private readonly Io _io;
 
     public MovensysDevice()
     {
         _api = new WMX3Api();
         _coreMotion = new CoreMotion(_api);
+        _advancedMotion = new AdvancedMotion(_api);
         _io = new Io(_api);
     }
 
@@ -334,12 +336,25 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
     public void StartECam(int tableIndex, int masterChannel, int slaveChannel, double[] masterPositions,
         double[] slavePositions)
     {
-        throw new NotImplementedException();
+        Console.WriteLine("Start ECam.");
+        if (masterPositions.Length != slavePositions.Length)
+            throw new Exception();
+        var err = 0;
+        err = _advancedMotion.AdvSync.StartECAM(tableIndex, new AdvSync.ECAMData()
+        {
+            MasterAxis = masterChannel,
+            MasterPos = masterPositions,
+            NumPoints = (uint)masterPositions.Length,
+            Options = new AdvSync.ECAMOptions() { Type = AdvSync.ECAMType.Repeat },
+            SlaveAxis = slaveChannel,
+            SlavePos = slavePositions
+        });
+        if (err != ErrorCode.None) throw new Exception(CoreMotion.ErrorToString(err));
     }
 
     public void StopECam(int tableIndex)
     {
-        throw new NotImplementedException();
+        _advancedMotion.AdvSync.StopECAM(tableIndex);
     }
 
     public bool IsECamEnabled(int tableIndex)
