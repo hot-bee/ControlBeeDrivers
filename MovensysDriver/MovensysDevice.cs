@@ -4,12 +4,13 @@ using WMX3ApiCLR;
 
 namespace MovensysDriver;
 
-public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIoDevice
+public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIoDevice, IUserMemoryDevice
 {
+    private readonly AdvancedMotion _advancedMotion;
     private readonly WMX3Api _api;
     private readonly CoreMotion _coreMotion;
-    private readonly AdvancedMotion _advancedMotion;
     private readonly Io _io;
+    private readonly UserMemory _userMemory;
 
     public MovensysDevice()
     {
@@ -17,6 +18,7 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         _coreMotion = new CoreMotion(_api);
         _advancedMotion = new AdvancedMotion(_api);
         _io = new Io(_api);
+        _userMemory = new UserMemory(_api);
     }
 
     public void SetAnalogOutputByte(int channel, byte value)
@@ -340,12 +342,12 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         if (masterPositions.Length != slavePositions.Length)
             throw new Exception();
         var err = 0;
-        err = _advancedMotion.AdvSync.StartECAM(tableIndex, new AdvSync.ECAMData()
+        err = _advancedMotion.AdvSync.StartECAM(tableIndex, new AdvSync.ECAMData
         {
             MasterAxis = masterChannel,
             MasterPos = masterPositions,
             NumPoints = (uint)masterPositions.Length,
-            Options = new AdvSync.ECAMOptions() { Type = AdvSync.ECAMType.Repeat },
+            Options = new AdvSync.ECAMOptions { Type = AdvSync.ECAMType.Repeat },
             SlaveAxis = slaveChannel,
             SlavePos = slavePositions
         });
@@ -478,6 +480,90 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         var startCommunicationTimeout = config.GetValueOrDefault("StartCommunicationTimeout") as uint? ?? 5000;
         err = _api.StartCommunication(startCommunicationTimeout);
         if (err != ErrorCode.None) throw new Exception(GetErrorMessage(err));
+    }
+
+    public void SetUserMemoryBit(int channel, int offset, byte value)
+    {
+        _userMemory.SetMBitEx((uint)channel, (uint)offset, value);
+    }
+
+    public void SetUserMemoryByte(int channel, byte value)
+    {
+        _userMemory.SetMAnalogDataUCharEx(channel, value);
+    }
+
+    public void SetUserMemorySignedByte(int channel, sbyte value)
+    {
+        _userMemory.SetMAnalogDataCharEx(channel, value);
+    }
+
+    public void SetUserMemoryWord(int channel, ushort value)
+    {
+        _userMemory.SetMAnalogDataUShortEx(channel, value);
+    }
+
+    public void SetUserMemorySignedWord(int channel, short value)
+    {
+        _userMemory.SetMAnalogDataShortEx(channel, value);
+    }
+
+    public void SetUserMemoryDWord(int channel, uint value)
+    {
+        _userMemory.SetMAnalogDataUIntEx(channel, value);
+    }
+
+    public void SetUserMemorySignedDWord(int channel, int value)
+    {
+        _userMemory.SetMAnalogDataIntEx(channel, value);
+    }
+
+    public byte GetUserMemoryBit(int channel, int offset)
+    {
+        byte data = 0;
+        _userMemory.GetMBitEx((uint)channel, (uint)offset, ref data);
+        return data;
+    }
+
+    public byte GetUserMemoryByte(int channel)
+    {
+        byte data = 0;
+        _userMemory.GetMAnalogDataUCharEx((uint)channel, ref data);
+        return data;
+    }
+
+    public sbyte GetUserMemorySignedByte(int channel)
+    {
+        sbyte data = 0;
+        _userMemory.GetMAnalogDataCharEx((uint)channel, ref data);
+        return data;
+    }
+
+    public ushort GetUserMemoryWord(int channel)
+    {
+        ushort data = 0;
+        _userMemory.GetMAnalogDataUShortEx((uint)channel, ref data);
+        return data;
+    }
+
+    public short GetUserMemorySignedWord(int channel)
+    {
+        short data = 0;
+        _userMemory.GetMAnalogDataShortEx((uint)channel, ref data);
+        return data;
+    }
+
+    public uint GetUserMemoryDWord(int channel)
+    {
+        uint data = 0;
+        _userMemory.GetMAnalogDataUIntEx((uint)channel, ref data);
+        return data;
+    }
+
+    public int GetUserMemorySignedDWord(int channel)
+    {
+        var data = 0;
+        _userMemory.GetMAnalogDataIntEx((uint)channel, ref data);
+        return data;
     }
 
     private void StopTorque(int channel)
