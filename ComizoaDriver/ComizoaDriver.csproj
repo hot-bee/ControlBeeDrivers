@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="ControlBeeAbstract">
+      <HintPath>..\..\ControlBeeAbstract\ControlBeeAbstract\bin\Debug\net8.0\ControlBeeAbstract.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

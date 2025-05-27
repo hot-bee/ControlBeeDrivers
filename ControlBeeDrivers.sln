@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovensysDriver", "MovensysD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AjinDriver", "AjinDriver\AjinDriver.csproj", "{FBF6F88C-3D11-49D4-B9C7-CFF4B900F7F9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComizoaDriver", "ComizoaDriver\ComizoaDriver.csproj", "{A5A22109-03E0-6DB7-EE3F-4836A994D9EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
