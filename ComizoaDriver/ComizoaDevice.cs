@@ -11,46 +11,46 @@ public class ComizoaDevice : Device, IMotionDevice, IDigitalIoDevice
     {
         var data = 0;
         var err = cmmDiGetOne(channel, ref data);
-        if (err != 0) throw new Exception();
+        if (err != 0) throw new DeviceError();
         return data == 1;
     }
 
     public void SetDigitalOutputBit(int channel, bool value)
     {
         var err = cmmDoPutOne(channel, value ? 1 : 0);
-        if (err != 0) throw new Exception();
+        if (err != 0) throw new DeviceError();
     }
 
     public bool GetDigitalOutputBit(int channel)
     {
         var data = 0;
         var err = cmmDoGetOne(channel, ref data);
-        if (err != 0) throw new Exception();
+        if (err != 0) throw new DeviceError();
         return data == 1;
     }
 
     public override void Init(Dictionary<string, object?> config)
     {
         var numAxes = 0;
-        if (cmmGnDeviceLoad(0, ref numAxes) != 0) throw new Exception("Failed to init.");
+        if (cmmGnDeviceLoad(0, ref numAxes) != 0) throw new DeviceError("Failed to init.");
     }
 
     public override void Dispose()
     {
-        if (cmmGnDeviceUnload() != 0) throw new Exception("Failed to dispose.");
+        if (cmmGnDeviceUnload() != 0) throw new DeviceError("Failed to dispose.");
     }
 
     public void Enable(int channel, bool value)
     {
         var err = cmmGnSetServoOn(channel, value ? 1 : 0);
-        if (err != 0) throw new Exception("Failed to enable servo.");
+        if (err != 0) throw new DeviceError("Failed to enable servo.");
     }
 
     public bool IsEnabled(int channel)
     {
         var data = 0;
         var err = cmmGnGetServoOn(channel, ref data);
-        if (err != 0) throw new Exception();
+        if (err != 0) throw new DeviceError();
         return data == 1;
     }
 
@@ -58,17 +58,17 @@ public class ComizoaDevice : Device, IMotionDevice, IDigitalIoDevice
     {
         var data = 0;
         var err = cmmStReadMioStatuses(channel, ref data);
-        if (err != 0) throw new Exception("Failed to get status.");
+        if (err != 0) throw new DeviceError("Failed to get status.");
         return (data & (1 << (int)_TCmMioState.ALM)) != 0;
     }
 
     public void ClearAlarm(int channel)
     {
         var err = cmmGnSetAlarmRes(channel, 1);
-        if (err != 0) throw new Exception();
+        if (err != 0) throw new DeviceError();
         Thread.Sleep(100);
         err = cmmGnSetAlarmRes(channel, 0);
-        if (err != 0) throw new Exception();
+        if (err != 0) throw new DeviceError();
     }
 
     public void SetTorque(int channel, double torque)
@@ -80,11 +80,11 @@ public class ComizoaDevice : Device, IMotionDevice, IDigitalIoDevice
     {
         var err = 0;
         err = cmmCfgSetSpeedPattern(channel, (int)SPDMODE.MODE_TRPZDL, velocity, acceleration, deceleration);
-        if (err != 0) throw new Exception();
+        if (err != 0) throw new DeviceError();
         err = cmmSxSetSpeedRatio(channel, (int)SPDMODE.MODE_TRPZDL, 100, 100, 100);
-        if (err != 0) throw new Exception();
+        if (err != 0) throw new DeviceError();
         err = cmmSxMoveToStart(channel, position);
-        if (err != 0 && err != cmERR_STOP_BY_ELP && err != cmERR_STOP_BY_ELN) throw new Exception();
+        if (err != 0 && err != cmERR_STOP_BY_ELP && err != cmERR_STOP_BY_ELN) throw new DeviceError();
     }
 
     public void JerkRatioSCurveMove(int channel, double position, double velocity, double acceleration,
@@ -114,7 +114,7 @@ public class ComizoaDevice : Device, IMotionDevice, IDigitalIoDevice
     {
         var data = 0;
         var err = cmmSxIsDone(channel, ref data);
-        if (err != 0 && err != cmERR_STOP_BY_ELP && err != cmERR_STOP_BY_ELN) throw new Exception();
+        if (err != 0 && err != cmERR_STOP_BY_ELP && err != cmERR_STOP_BY_ELN) throw new DeviceError();
         return data != 1;
     }
 
@@ -127,20 +127,20 @@ public class ComizoaDevice : Device, IMotionDevice, IDigitalIoDevice
     public void SetCommandPosition(int channel, double position)
     {
         var err = cmmStSetPosition(channel, (int)_TCmCntr.cmCNT_COMM, position);
-        if (err != 0) throw new Exception();
+        if (err != 0) throw new DeviceError();
     }
 
     public void SetActualPosition(int channel, double position)
     {
         var err = cmmStSetPosition(channel, (int)_TCmCntr.cmCNT_FEED, position);
-        if (err != 0) throw new Exception();
+        if (err != 0) throw new DeviceError();
     }
 
     public double GetCommandPosition(int channel)
     {
         double data = 0;
         var err = cmmStGetPosition(channel, (int)_TCmCntr.cmCNT_COMM, ref data);
-        if (err != 0) throw new Exception();
+        if (err != 0) throw new DeviceError();
         return data;
     }
 
@@ -148,7 +148,7 @@ public class ComizoaDevice : Device, IMotionDevice, IDigitalIoDevice
     {
         double data = 0;
         var err = cmmStGetPosition(channel, (int)_TCmCntr.cmCNT_FEED, ref data);
-        if (err != 0) throw new Exception();
+        if (err != 0) throw new DeviceError();
         return data;
     }
 
@@ -182,7 +182,7 @@ public class ComizoaDevice : Device, IMotionDevice, IDigitalIoDevice
     {
         var data = 0;
         var err = cmmStReadMioStatuses(channel, ref data);
-        if (err != 0) throw new Exception("Failed to get status.");
+        if (err != 0) throw new DeviceError("Failed to get status.");
         return (data & (1 << (int)_TCmMioState.ORG)) != 0;
     }
 
@@ -190,7 +190,7 @@ public class ComizoaDevice : Device, IMotionDevice, IDigitalIoDevice
     {
         var data = 0;
         var err = cmmStReadMioStatuses(channel, ref data);
-        if (err != 0) throw new Exception("Failed to get status.");
+        if (err != 0) throw new DeviceError("Failed to get status.");
         return (data & (1 << (int)_TCmMioState.ELN)) != 0;
     }
 
@@ -198,7 +198,7 @@ public class ComizoaDevice : Device, IMotionDevice, IDigitalIoDevice
     {
         var data = 0;
         var err = cmmStReadMioStatuses(channel, ref data);
-        if (err != 0) throw new Exception("Failed to get status.");
+        if (err != 0) throw new DeviceError("Failed to get status.");
         return (data & (1 << (int)_TCmMioState.ELP)) != 0;
     }
 
@@ -208,25 +208,25 @@ public class ComizoaDevice : Device, IMotionDevice, IDigitalIoDevice
     {
         var err = 0;
         err = cmmCfgSetSpeedPattern(channel, (int)SPDMODE.MODE_TRPZDL, velocity, acceleration, deceleration);
-        if (err != 0) throw new Exception();
+        if (err != 0) throw new DeviceError();
         err = cmmSxSetSpeedRatio(channel, (int)SPDMODE.MODE_TRPZDL, 100, 100, 100);
-        if (err != 0) throw new Exception();
+        if (err != 0) throw new DeviceError();
         err = cmmSxVMoveStart(channel, velocity >= 0 ? (int)Direction.DIR_P : (int)Direction.DIR_N);
-        if (err != 0 && err != cmERR_STOP_BY_ELP && err != cmERR_STOP_BY_ELN) throw new Exception();
+        if (err != 0 && err != cmERR_STOP_BY_ELP && err != cmERR_STOP_BY_ELN) throw new DeviceError();
     }
 
     public void Stop(int channel)
     {
         var err = 0;
         err = cmmSxStop(channel, 0, 0);
-        if (err != 0) throw new Exception();
+        if (err != 0) throw new DeviceError();
     }
 
     public void EStop(int channel)
     {
         var err = 0;
         err = cmmSxStopEmg(channel);
-        if (err != 0) throw new Exception();
+        if (err != 0) throw new DeviceError();
     }
 
     public void SearchZPhase(int channel, double velocity, double acceleration, double distance)
