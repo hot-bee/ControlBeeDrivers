@@ -207,7 +207,7 @@ public class ComizoaDevice : Device, IMotionDevice, IDigitalIoDevice
         double decelJerkRatio)
     {
         var err = 0;
-        err = cmmCfgSetSpeedPattern(channel, (int)SPDMODE.MODE_TRPZDL, velocity, acceleration, deceleration);
+        err = cmmCfgSetSpeedPattern(channel, (int)SPDMODE.MODE_TRPZDL, Math.Abs(velocity), acceleration, deceleration);
         if (err != 0) throw new DeviceError();
         err = cmmSxSetSpeedRatio(channel, (int)SPDMODE.MODE_TRPZDL, 100, 100, 100);
         if (err != 0) throw new DeviceError();
