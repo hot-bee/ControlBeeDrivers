@@ -63,7 +63,8 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         var err = 0;
         var data = 0;
         err = _io.GetInAnalogDataIntEx(channel, ref data);
-        if (err != ErrorCode.None) throw new DeviceError(GetErrorMessage(err));
+        if (err != ErrorCode.None)
+            throw new DeviceError($"Movensys Device Error, Channel: {channel}, {GetErrorMessage(err)}");
         return data;
     }
 
@@ -165,7 +166,8 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
     {
         var err = 0;
         err = _coreMotion.AxisControl.SetServoOn(channel, value ? 1 : 0);
-        if (err != ErrorCode.None) throw new DeviceError(GetErrorMessage(err));
+        if (err != ErrorCode.None)
+            throw new DeviceError($"Movensys Device Error, Channel: {channel}, {GetErrorMessage(err)}");
     }
 
     public bool IsEnabled(int channel)
@@ -173,7 +175,8 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         var err = 0;
         var st = new CoreMotionStatus();
         err = _coreMotion.GetStatus(ref st);
-        if (err != ErrorCode.None) throw new DeviceError(GetErrorMessage(err));
+        if (err != ErrorCode.None)
+            throw new DeviceError($"Movensys Device Error, Channel: {channel}, {GetErrorMessage(err)}");
         return st.AxesStatus[channel].ServoOn;
     }
 
@@ -182,7 +185,8 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         var err = 0;
         var st = new CoreMotionStatus();
         err = _coreMotion.GetStatus(ref st);
-        if (err != ErrorCode.None) throw new DeviceError(GetErrorMessage(err));
+        if (err != ErrorCode.None)
+            throw new DeviceError($"Movensys Device Error, Channel: {channel}, {GetErrorMessage(err)}");
         return st.AxesStatus[channel].AmpAlarm;
     }
 
@@ -190,7 +194,8 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
     {
         var err = 0;
         err = _coreMotion.AxisControl.ClearAmpAlarm(channel);
-        if (err != ErrorCode.None) throw new DeviceError(GetErrorMessage(err));
+        if (err != ErrorCode.None)
+            throw new DeviceError($"Movensys Device Error, Channel: {channel}, {GetErrorMessage(err)}");
     }
 
     public void SetTorque(int channel, double torque)
@@ -204,7 +209,8 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         SetCommandMode(channel, AxisCommandMode.Torque);
         var err = 0;
         err = _coreMotion.Torque.StartTrq(new Torque.TrqCommand { Axis = channel, Torque = torque * 100.0 });
-        if (err != ErrorCode.None) throw new DeviceError(GetErrorMessage(err));
+        if (err != ErrorCode.None)
+            throw new DeviceError($"Movensys Device Error, Channel: {channel}, {GetErrorMessage(err)}");
     }
 
 
@@ -225,7 +231,8 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
             Target = position
         };
         err = _coreMotion.Motion.StartPos(pos);
-        if (err != ErrorCode.None) throw new DeviceError(GetErrorMessage(err));
+        if (err != ErrorCode.None)
+            throw new DeviceError($"Movensys Device Error, Channel: {channel}, {GetErrorMessage(err)}");
     }
 
     public void JerkRatioSCurveMove(int channel, double position, double velocity, double acceleration,
@@ -249,7 +256,8 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
             Target = position
         };
         err = _coreMotion.Motion.StartPos(pos);
-        if (err != ErrorCode.None) throw new DeviceError(GetErrorMessage(err));
+        if (err != ErrorCode.None)
+            throw new DeviceError($"Movensys Device Error, Channel: {channel}, {GetErrorMessage(err)}");
     }
 
     public void Wait(int channel)
@@ -257,14 +265,16 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         var err = 0;
         err = _coreMotion.Motion.Wait(channel);
         // Except limit touch error
-        if (err != 1572 && err != ErrorCode.None) throw new DeviceError(GetErrorMessage(err));
+        if (err != 1572 && err != ErrorCode.None)
+            throw new DeviceError($"Movensys Device Error, Channel: {channel}, {GetErrorMessage(err)}");
     }
 
     public void Wait(int channel, int timeout)
     {
         var err = 0;
         err = _coreMotion.Motion.Wait(channel, (uint)timeout);
-        if (err != 1572 && err != ErrorCode.None) throw new DeviceError(GetErrorMessage(err));
+        if (err != 1572 && err != ErrorCode.None)
+            throw new DeviceError($"Movensys Device Error, Channel: {channel}, {GetErrorMessage(err)}");
     }
 
     public bool IsMoving(int channel)
@@ -272,7 +282,8 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         var err = 0;
         var st = new CoreMotionStatus();
         err = _coreMotion.GetStatus(ref st);
-        if (err != ErrorCode.None) throw new DeviceError(GetErrorMessage(err));
+        if (err != ErrorCode.None)
+            throw new DeviceError($"Movensys Device Error, Channel: {channel}, {GetErrorMessage(err)}");
         return st.AxesStatus[channel].OpState != OperationState.Idle;
     }
 
@@ -288,7 +299,8 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         SetCommandMode(channel, AxisCommandMode.Position);
         var err = 0;
         err = _coreMotion.Home.SetCommandPos(channel, position);
-        if (err != ErrorCode.None) throw new DeviceError(GetErrorMessage(err));
+        if (err != ErrorCode.None)
+            throw new DeviceError($"Movensys Device Error, Channel: {channel}, {GetErrorMessage(err)}");
     }
 
     public void SetActualPosition(int channel, double position)
@@ -296,7 +308,8 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         SetCommandMode(channel, AxisCommandMode.Position);
         var err = 0;
         err = _coreMotion.Home.SetFeedbackPos(channel, position);
-        if (err != ErrorCode.None) throw new DeviceError(GetErrorMessage(err));
+        if (err != ErrorCode.None)
+            throw new DeviceError($"Movensys Device Error, Channel: {channel}, {GetErrorMessage(err)}");
     }
 
     public double GetCommandPosition(int channel)
@@ -304,7 +317,8 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         var err = 0;
         var st = new CoreMotionStatus();
         err = _coreMotion.GetStatus(ref st);
-        if (err != ErrorCode.None) throw new DeviceError(GetErrorMessage(err));
+        if (err != ErrorCode.None)
+            throw new DeviceError($"Movensys Device Error, Channel: {channel}, {GetErrorMessage(err)}");
         return st.AxesStatus[channel].PosCmd;
     }
 
@@ -313,7 +327,8 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         var err = 0;
         var st = new CoreMotionStatus();
         err = _coreMotion.GetStatus(ref st);
-        if (err != ErrorCode.None) throw new DeviceError(GetErrorMessage(err));
+        if (err != ErrorCode.None)
+            throw new DeviceError($"Movensys Device Error, Channel: {channel}, {GetErrorMessage(err)}");
         return st.AxesStatus[channel].ActualPos;
     }
 
@@ -322,7 +337,8 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         var err = 0;
         var st = new CoreMotionStatus();
         err = _coreMotion.GetStatus(ref st);
-        if (err != ErrorCode.None) throw new DeviceError(GetErrorMessage(err));
+        if (err != ErrorCode.None)
+            throw new DeviceError($"Movensys Device Error, Channel: {channel}, {GetErrorMessage(err)}");
         return st.AxesStatus[channel].VelocityCmd;
     }
 
@@ -331,7 +347,8 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         var err = 0;
         var st = new CoreMotionStatus();
         err = _coreMotion.GetStatus(ref st);
-        if (err != ErrorCode.None) throw new DeviceError(GetErrorMessage(err));
+        if (err != ErrorCode.None)
+            throw new DeviceError($"Movensys Device Error, Channel: {channel}, {GetErrorMessage(err)}");
         return st.AxesStatus[channel].ActualVelocity;
     }
 
@@ -369,7 +386,8 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         var err = 0;
         var st = new CoreMotionStatus();
         err = _coreMotion.GetStatus(ref st);
-        if (err != ErrorCode.None) throw new DeviceError(GetErrorMessage(err));
+        if (err != ErrorCode.None)
+            throw new DeviceError($"Movensys Device Error, Channel: {channel}, {GetErrorMessage(err)}");
         return st.AxesStatus[channel].HomeSwitch;
     }
 
@@ -378,7 +396,8 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         var err = 0;
         var st = new CoreMotionStatus();
         err = _coreMotion.GetStatus(ref st);
-        if (err != ErrorCode.None) throw new DeviceError(GetErrorMessage(err));
+        if (err != ErrorCode.None)
+            throw new DeviceError($"Movensys Device Error, Channel: {channel}, {GetErrorMessage(err)}");
         return st.AxesStatus[channel].NegativeLS;
     }
 
@@ -387,7 +406,8 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         var err = 0;
         var st = new CoreMotionStatus();
         err = _coreMotion.GetStatus(ref st);
-        if (err != ErrorCode.None) throw new DeviceError(GetErrorMessage(err));
+        if (err != ErrorCode.None)
+            throw new DeviceError($"Movensys Device Error, Channel: {channel}, {GetErrorMessage(err)}");
         return st.AxesStatus[channel].PositiveLS;
     }
 
@@ -411,7 +431,8 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
             }
         };
         err = _coreMotion.Velocity.StartVel(vel);
-        if (err != ErrorCode.None) throw new DeviceError(GetErrorMessage(err));
+        if (err != ErrorCode.None)
+            throw new DeviceError($"Movensys Device Error, Channel: {channel}, {GetErrorMessage(err)}");
     }
 
     public void Stop(int channel)
@@ -571,7 +592,8 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         SetCommandMode(channel, AxisCommandMode.Torque);
         var err = 0;
         err = _coreMotion.Torque.StopTrq(channel);
-        if (err != ErrorCode.None) throw new DeviceError(GetErrorMessage(err));
+        if (err != ErrorCode.None)
+            throw new DeviceError($"Movensys Device Error, Channel: {channel}, {GetErrorMessage(err)}");
     }
 
     private void SetCommandMode(int channel, AxisCommandMode mode)
