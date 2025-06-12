@@ -281,4 +281,10 @@ public class AjinDevice : Device, IMotionDevice, IDigitalIoDevice
         if(Math.Abs(pos1 - pos2) > 3000.0)  // TODO: Parameterize this tolerance.
             throw new DeviceError();
     }
+
+    public void SetSyncGearRatio(int masterChannel, int slaveChannel, double gearRatio, double velocity, double acceleration,
+        double deceleration, double accelJerkRatio, double decelJerkRatio)
+    {
+        throw new NotImplementedException();
+    }
 }

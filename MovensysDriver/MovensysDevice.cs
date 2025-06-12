@@ -587,6 +587,17 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         return data;
     }
 
+    public void SetSyncGearRatio(int masterChannel, int slaveChannel, double gearRatio, double velocity,
+        double acceleration,
+        double deceleration, double accelJerkRatio, double decelJerkRatio)
+    {
+        SetCommandMode(slaveChannel, AxisCommandMode.Position);
+        var err = 0;
+        var profile = Profile.SetupJerkRatio(velocity, acceleration, deceleration, accelJerkRatio, decelJerkRatio);
+        err = _coreMotion.Sync.SetSyncGearRatio(masterChannel, slaveChannel, gearRatio, profile);
+        if (err != ErrorCode.None) throw new DeviceError(CoreMotion.ErrorToString(err));
+    }
+
     private void StopTorque(int channel)
     {
         SetCommandMode(channel, AxisCommandMode.Torque);

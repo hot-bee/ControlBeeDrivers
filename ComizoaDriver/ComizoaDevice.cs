@@ -233,4 +233,10 @@ public class ComizoaDevice : Device, IMotionDevice, IDigitalIoDevice
     {
         throw new NotImplementedException();
     }
+
+    public void SetSyncGearRatio(int masterChannel, int slaveChannel, double gearRatio, double velocity, double acceleration,
+        double deceleration, double accelJerkRatio, double decelJerkRatio)
+    {
+        throw new NotImplementedException();
+    }
 }
