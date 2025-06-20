@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="log4net" Version="3.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="ControlBeeAbstract">
       <HintPath>..\..\ControlBeeAbstract\ControlBeeAbstract\bin\Debug\net8.0\ControlBeeAbstract.dll</HintPath>
     </Reference>

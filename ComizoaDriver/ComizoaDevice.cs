@@ -1,12 +1,15 @@
 ﻿using System.Diagnostics;
 using ControlBeeAbstract.Devices;
 using ControlBeeAbstract.Exceptions;
+using log4net;
 using static ComiLib.CMM.SafeNativeMethods;
 
 namespace ComizoaDriver;
 
 public class ComizoaDevice : Device, IMotionDevice, IDigitalIoDevice
 {
+    private static readonly ILog Logger = LogManager.GetLogger("ComizoaDevice");
+
     public bool GetDigitalInputBit(int channel)
     {
         var data = 0;
@@ -33,6 +36,14 @@ public class ComizoaDevice : Device, IMotionDevice, IDigitalIoDevice
     {
         var numAxes = 0;
         if (cmmGnDeviceLoad(0, ref numAxes) != 0) throw new DeviceError("Failed to init.");
+
+        var initFile = config.GetValueOrDefault("InitFile") as string;
+        if (string.IsNullOrEmpty(initFile))
+            Logger.Warn("InitFile is empty.");
+        else
+        {
+            if(cmmGnInitFromFile(initFile) != 0) throw new DeviceError();
+        }
     }
 
     public override void Dispose()
@@ -234,7 +245,8 @@ public class ComizoaDevice : Device, IMotionDevice, IDigitalIoDevice
         throw new NotImplementedException();
     }
 
-    public void SetSyncGearRatio(int masterChannel, int slaveChannel, double gearRatio, double velocity, double acceleration,
+    public void SetSyncGearRatio(int masterChannel, int slaveChannel, double gearRatio, double velocity,
+        double acceleration,
         double deceleration, double accelJerkRatio, double decelJerkRatio)
     {
         throw new NotImplementedException();
