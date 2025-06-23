@@ -499,8 +499,11 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
         if (err != ErrorCode.None) throw new DeviceError(GetErrorMessage(err));
 
         var startCommunicationTimeout = config.GetValueOrDefault("StartCommunicationTimeout") as uint? ?? 5000;
-        err = _api.StartCommunication(startCommunicationTimeout);
+        err = _api.StartCommunication(startCommunicationTimeout);   
         if (err != ErrorCode.None) throw new DeviceError(GetErrorMessage(err));
+
+        var initFile = config.GetValueOrDefault("InitFile") as string;
+        if (!string.IsNullOrEmpty(initFile)) _coreMotion.Config.ImportAndSetAll(initFile);
     }
 
     public void SetUserMemoryBit(int channel, int offset, byte value)
