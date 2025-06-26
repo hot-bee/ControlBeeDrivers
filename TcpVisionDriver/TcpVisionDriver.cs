@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -17,6 +18,18 @@ public class TcpVisionDriver : Device, IVisionDevice
 
     private WatsonTcpClient _client = null!;
     private JsonObject[,] _result = null!;
+
+    public void EmbedVisionView(IntPtr parentHandle)
+    {
+        Logger.Info("Send a request to embed vision view.");
+        var payload = new Dict
+        {
+            ["Name"] = "EmbedVision",
+            ["Parent"] = parentHandle.ToInt64()
+        };
+        var message = JsonSerializer.Serialize(payload);
+        _client.SendAsync(message);
+    }
 
     public event EventHandler? VisionConnected;
     public event EventHandler? VisionDisconnected;
@@ -52,7 +65,11 @@ public class TcpVisionDriver : Device, IVisionDevice
         {
             _client.Connect();
         }
-        catch (TimeoutException exception)
+        catch (SocketException)
+        {
+            Logger.Error("Couldn't connect to the remote.");
+        }
+        catch (TimeoutException)
         {
             Logger.Error("Couldn't connect to the remote.");
         }

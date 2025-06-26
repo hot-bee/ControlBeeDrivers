@@ -7,9 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ControlBeeAbstract" Version="0.0.9" />
     <PackageReference Include="log4net" Version="3.0.3" />
     <PackageReference Include="WatsonTcp" Version="6.0.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ControlBeeAbstract">
+      <HintPath>..\..\ControlBeeAbstract\ControlBeeAbstract\bin\Debug\net8.0\ControlBeeAbstract.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
