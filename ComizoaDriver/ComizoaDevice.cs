@@ -251,4 +251,31 @@ public class ComizoaDevice : Device, IMotionDevice, IDigitalIoDevice
     {
         throw new NotImplementedException();
     }
+
+    public void JerkRatioSCurveMove((int channel, double position)[] channelAndPositions, double velocity, double acceleration, double deceleration, double accelJerkRatio, double decelJerkRatio)
+    {
+        var mapMask1 = 0;
+        foreach (var (channel, position) in channelAndPositions)
+        {
+            switch(channel)
+            {
+                case 0:
+                    mapMask1 += (int)_TCmAxisMask.cmX1_MASK;
+                    break;
+                case 1:
+                    mapMask1 += (int)_TCmAxisMask.cmY1_MASK;
+                    break;
+                case 2:
+                    mapMask1 += (int)_TCmAxisMask.cmZ1_MASK;
+                    break;
+                case 3:
+                    mapMask1 += (int)_TCmAxisMask.cmU1_MASK;
+                    break;
+            }
+        }
+        cmmIxMapAxes(0, mapMask1, 0);
+        cmmIxSetSpeedPattern(0, 1, (int)SPDMODE.MODE_TRPZDL, velocity, acceleration, deceleration);
+        var positions = channelAndPositions.Select(x => x.position).ToArray();
+        cmmIxLineToStart(0, positions);
+    }
 }
