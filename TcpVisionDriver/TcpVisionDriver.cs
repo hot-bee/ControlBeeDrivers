@@ -31,6 +31,42 @@ public class TcpVisionDriver : Device, IVisionDevice
         _client.SendAsync(message);
     }
 
+    public void StartContinuous(int channel)
+    {
+        Logger.Info("Send a request to start continuous grab.");
+        var payload = new Dict
+        {
+            ["Name"] = "StartContinuous",
+            ["Channel"] = channel
+        };
+        var message = JsonSerializer.Serialize(payload);
+        _client.SendAsync(message);
+    }
+
+    public void StopContinuous(int channel)
+    {
+        Logger.Info("Send a request to stop continuous grab.");
+        var payload = new Dict
+        {
+            ["Name"] = "StopContinuous",
+            ["Channel"] = channel
+        };
+        var message = JsonSerializer.Serialize(payload);
+        _client.SendAsync(message);
+    }
+
+    public void FocusChannel(int channel)
+    {
+        Logger.Info("Send a request to focus the given channel.");
+        var payload = new Dict
+        {
+            ["Name"] = "FocusChannel",
+            ["Channel"] = channel
+        };
+        var message = JsonSerializer.Serialize(payload);
+        _client.SendAsync(message);
+    }
+
     public event EventHandler? VisionConnected;
     public event EventHandler? VisionDisconnected;
 
