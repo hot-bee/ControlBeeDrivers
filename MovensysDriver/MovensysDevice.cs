@@ -260,6 +260,12 @@ public class MovensysDevice : Device, IMotionDevice, IDigitalIoDevice, IAnalogIo
             throw new DeviceError($"Movensys Device Error, Channel: {channel}, {GetErrorMessage(err)}");
     }
 
+    public void JerkRatioSCurveMove((int channel, double position)[] channelAndPositions, double velocity, double acceleration,
+        double deceleration, double accelJerkRatio, double decelJerkRatio)
+    {
+        throw new NotImplementedException();
+    }
+
     public void Wait(int channel)
     {
         var err = 0;
