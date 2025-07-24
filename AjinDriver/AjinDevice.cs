@@ -237,12 +237,6 @@ public class AjinDevice : Device, IMotionDevice, IDigitalIoDevice
             throw new DeviceError();
     }
 
-    public void JerkRatioSCurveMove((int channel, double position)[] channelAndPositions, double velocity, double acceleration,
-        double deceleration, double accelJerkRatio, double decelJerkRatio)
-    {
-        throw new NotImplementedException();
-    }
-
     public void VelocityMove(int channel, double velocity, double acceleration,
         double deceleration, double accelJerkRatio, double decelJerkRatio)
     {

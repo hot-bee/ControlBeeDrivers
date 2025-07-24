@@ -4,11 +4,11 @@ using log4net;
 
 namespace AcsDriver;
 
-public class AcsDevice : Device, IMotionDevice, IDigitalIoDevice
+public class AcsDevice : Device, IMotionDevice, IDigitalIoDevice, IBufferDevice
 {
+    private const int BitsPerSlot = 16; // TODO: Parameterize this since this could be 8 for some use.
     private static readonly ILog Logger = LogManager.GetLogger(nameof(AcsDevice));
     private readonly Api _api = new();
-    private const int BitsPerSlot = 16;  // TODO: Parameterize this since this could be 8 for some use.
 
     public bool GetDigitalInputBit(int channel)
     {
@@ -234,5 +234,27 @@ public class AcsDevice : Device, IMotionDevice, IDigitalIoDevice
         double deceleration, double accelJerkRatio, double decelJerkRatio)
     {
         throw new NotImplementedException();
+    }
+
+    public void RunBuffer(int bufferIndex, string label)
+    {
+        _api.RunBuffer((ProgramBuffer)bufferIndex, label);
+    }
+
+    public void StopBuffer(int bufferIndex)
+    {
+        _api.StopBuffer((ProgramBuffer)bufferIndex);
+    }
+
+    public object ReadVariable(string variable, int bufferIndex = -1,
+        int from1 = -1, int to1 = -1, int from2 = -1, int to2 = -1)
+    {
+        return _api.ReadVariable(variable, (ProgramBuffer)bufferIndex, from1, to1, from2, to2);
+    }
+
+    public void WriteVariable(object value, string variable, int bufferIndex = -1,
+        int from1 = -1, int to1 = -1, int from2 = -1, int to2 = -1)
+    {
+        _api.WriteVariable(value, variable, (ProgramBuffer)bufferIndex, from1, to1, from2, to2);
     }
 }
