@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AjinDriver", "AjinDriver\Aj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComizoaDriver", "ComizoaDriver\ComizoaDriver.csproj", "{A5A22109-03E0-6DB7-EE3F-4836A994D9EE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcsDriver", "AcsDriver\AcsDriver.csproj", "{489BF3EB-8707-471F-92AE-7BA383E2DC79}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,14 @@ Global
 		{FBF6F88C-3D11-49D4-B9C7-CFF4B900F7F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FBF6F88C-3D11-49D4-B9C7-CFF4B900F7F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FBF6F88C-3D11-49D4-B9C7-CFF4B900F7F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5A22109-03E0-6DB7-EE3F-4836A994D9EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5A22109-03E0-6DB7-EE3F-4836A994D9EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5A22109-03E0-6DB7-EE3F-4836A994D9EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5A22109-03E0-6DB7-EE3F-4836A994D9EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{489BF3EB-8707-471F-92AE-7BA383E2DC79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{489BF3EB-8707-471F-92AE-7BA383E2DC79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{489BF3EB-8707-471F-92AE-7BA383E2DC79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{489BF3EB-8707-471F-92AE-7BA383E2DC79}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

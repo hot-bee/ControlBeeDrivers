@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="log4net" Version="3.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ACS.SPiiPlusNET">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\ACS Motion Control\SPiiPlus ADK Suite v3.14.01\SPiiPlus .NET Library\ACS.SPiiPlusNET.dll</HintPath>
+    </Reference>
+    <Reference Include="ControlBeeAbstract">
+      <HintPath>..\..\ControlBeeAbstract\ControlBeeAbstract\bin\Debug\net8.0\ControlBeeAbstract.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
