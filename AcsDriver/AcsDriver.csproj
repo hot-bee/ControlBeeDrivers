@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <Reference Include="ACS.SPiiPlusNET">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\ACS Motion Control\SPiiPlus ADK Suite v3.14.01\SPiiPlus .NET Library\ACS.SPiiPlusNET.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\ACS Motion Control\SPiiPlus ADK Suite v4.10\SPiiPlus .NET Library\ACS.SPiiPlusNET.dll</HintPath>
     </Reference>
     <Reference Include="ControlBeeAbstract">
       <HintPath>..\..\ControlBeeAbstract\ControlBeeAbstract\bin\Debug\net8.0\ControlBeeAbstract.dll</HintPath>
