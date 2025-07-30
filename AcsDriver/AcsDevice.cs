@@ -126,8 +126,10 @@ public class AcsDevice : Device, IMotionDevice, IDigitalIoDevice, IBufferDevice
 
     public bool IsMoving(int channel)
     {
-        var state = _api.GetMotorState(Axis.ACSC_AXIS_0);
-        return (state & MotorStates.ACSC_MST_MOVE) != 0;
+        var motorState = _api.GetMotorState((Axis)channel);
+        var programState = _api.GetProgramState((ProgramBuffer)channel);
+        return (motorState & MotorStates.ACSC_MST_MOVE) != 0 ||
+               (programState & ProgramStates.ACSC_PST_RUN) != 0;
     }
 
     public void SetCommandAndActualPosition(int channel, double position)
