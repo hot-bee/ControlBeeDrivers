@@ -39,10 +39,10 @@ public class AcsDevice : Device, IMotionDevice, IDigitalIoDevice, IBufferDevice
 
     public override void Init(Dictionary<string, object?> config)
     {
-        _api.OpenCommSimulator();
-
         var hostIp = config.GetValueOrDefault("HostIP") as string;
         var hostPort = config.GetValueOrDefault("HostPort") as string;
+        if (int.TryParse(hostPort, out var port))
+            _api.OpenCommEthernetTCP(hostIp, port);
     }
 
     public override void Dispose()
