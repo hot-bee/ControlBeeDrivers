@@ -6,7 +6,7 @@ namespace AcsDriver;
 
 public class AcsDevice : Device, IMotionDevice, IDigitalIoDevice, IBufferDevice
 {
-    private const int BitsPerSlot = 16; // TODO: Parameterize this since this could be 8 for some use.
+    private const int BitsPerSlot = 8;
     private static readonly ILog Logger = LogManager.GetLogger(nameof(AcsDevice));
     private readonly Api _api = new();
 
