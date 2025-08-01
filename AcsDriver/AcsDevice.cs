@@ -126,10 +126,8 @@ public class AcsDevice : Device, IMotionDevice, IDigitalIoDevice, IBufferDevice
 
     public bool IsMoving(int channel)
     {
-        var motorState = _api.GetMotorState((Axis)channel);
-        var programState = _api.GetProgramState((ProgramBuffer)channel);
-        return (motorState & MotorStates.ACSC_MST_MOVE) != 0 ||
-               (programState & ProgramStates.ACSC_PST_RUN) != 0;
+        var state = _api.GetMotorState(Axis.ACSC_AXIS_0);
+        return (state & MotorStates.ACSC_MST_MOVE) != 0;
     }
 
     public void SetCommandAndActualPosition(int channel, double position)
@@ -246,6 +244,12 @@ public class AcsDevice : Device, IMotionDevice, IDigitalIoDevice, IBufferDevice
     public void StopBuffer(int bufferIndex)
     {
         _api.StopBuffer((ProgramBuffer)bufferIndex);
+    }
+
+    public bool IsRunningBuffer(int bufferIndex)
+    {
+        var programState = _api.GetProgramState((ProgramBuffer)bufferIndex);
+        return (programState & ProgramStates.ACSC_PST_RUN) != 0;
     }
 
     public object ReadVariable(string variable, int bufferIndex = -1,
