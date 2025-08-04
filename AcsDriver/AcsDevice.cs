@@ -65,13 +65,13 @@ public class AcsDevice : Device, IMotionDevice, IDigitalIoDevice, IBufferDevice
 
     public bool IsEnabled(int channel)
     {
-        var state = _api.GetMotorState(Axis.ACSC_AXIS_0);
+        var state = _api.GetMotorState((Axis)channel);
         return (state & MotorStates.ACSC_MST_ENABLE) != 0;
     }
 
     public bool IsAlarmed(int channel)
     {
-        var fault = _api.GetFault(Axis.ACSC_AXIS_0);
+        var fault = _api.GetFault((Axis)channel);
         fault &= ~SafetyControlMasks.ACSC_SAFETY_RL;
         fault &= ~SafetyControlMasks.ACSC_SAFETY_LL;
         return fault != 0;
@@ -126,7 +126,7 @@ public class AcsDevice : Device, IMotionDevice, IDigitalIoDevice, IBufferDevice
 
     public bool IsMoving(int channel)
     {
-        var state = _api.GetMotorState(Axis.ACSC_AXIS_0);
+        var state = _api.GetMotorState((Axis)channel);
         return (state & MotorStates.ACSC_MST_MOVE) != 0;
     }
 
