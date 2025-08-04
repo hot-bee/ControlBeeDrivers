@@ -39,10 +39,12 @@ public class ComizoaDevice : Device, IMotionDevice, IDigitalIoDevice
 
         var initFile = config.GetValueOrDefault("InitFile") as string;
         if (string.IsNullOrEmpty(initFile))
+        {
             Logger.Warn("InitFile is empty.");
+        }
         else
         {
-            if(cmmGnInitFromFile(initFile) != 0) throw new DeviceError();
+            if (cmmGnInitFromFile(initFile) != 0) throw new DeviceError();
         }
     }
 
@@ -103,6 +105,12 @@ public class ComizoaDevice : Device, IMotionDevice, IDigitalIoDevice
         double accelJerkRatio, double decelJerkRatio)
     {
         TrapezoidalMove(channel, position, velocity, acceleration, deceleration);
+    }
+
+    public void JerkRatioSCurveRelativeMove(int channel, double distance, double velocity, double acceleration,
+        double deceleration, double accelJerkRatio, double decelJerkRatio)
+    {
+        TrapezoidalRelativeMove(channel, distance, velocity, acceleration, deceleration);
     }
 
     public void Wait(int channel)
@@ -252,12 +260,12 @@ public class ComizoaDevice : Device, IMotionDevice, IDigitalIoDevice
         throw new NotImplementedException();
     }
 
-    public void JerkRatioSCurveMove((int channel, double position)[] channelAndPositions, double velocity, double acceleration, double deceleration, double accelJerkRatio, double decelJerkRatio)
+    public void JerkRatioSCurveMove((int channel, double position)[] channelAndPositions, double velocity,
+        double acceleration, double deceleration, double accelJerkRatio, double decelJerkRatio)
     {
         var mapMask1 = 0;
         foreach (var (channel, position) in channelAndPositions)
-        {
-            switch(channel)
+            switch (channel)
             {
                 case 0:
                     mapMask1 += (int)_TCmAxisMask.cmX1_MASK;
@@ -272,10 +280,22 @@ public class ComizoaDevice : Device, IMotionDevice, IDigitalIoDevice
                     mapMask1 += (int)_TCmAxisMask.cmU1_MASK;
                     break;
             }
-        }
+
         cmmIxMapAxes(0, mapMask1, 0);
         cmmIxSetSpeedPattern(0, 1, (int)SPDMODE.MODE_TRPZDL, velocity, acceleration, deceleration);
         var positions = channelAndPositions.Select(x => x.position).ToArray();
         cmmIxLineToStart(0, positions);
+    }
+
+    public void TrapezoidalRelativeMove(int channel, double distance, double velocity, double acceleration,
+        double deceleration)
+    {
+        var err = 0;
+        err = cmmCfgSetSpeedPattern(channel, (int)SPDMODE.MODE_TRPZDL, velocity, acceleration, deceleration);
+        if (err != 0) throw new DeviceError();
+        err = cmmSxSetSpeedRatio(channel, (int)SPDMODE.MODE_TRPZDL, 100, 100, 100);
+        if (err != 0) throw new DeviceError();
+        err = cmmSxMoveStart(channel, distance);
+        if (err != 0 && err != cmERR_STOP_BY_ELP && err != cmERR_STOP_BY_ELN) throw new DeviceError();
     }
 }
