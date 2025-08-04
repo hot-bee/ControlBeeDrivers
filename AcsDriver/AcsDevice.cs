@@ -6,7 +6,7 @@ namespace AcsDriver;
 
 public class AcsDevice : Device, IMotionDevice, IDigitalIoDevice, IBufferDevice
 {
-    private const int BitsPerSlot = 16; // TODO: Parameterize this since this could be 8 for some use.
+    private const int BitsPerSlot = 8;
     private static readonly ILog Logger = LogManager.GetLogger(nameof(AcsDevice));
     private readonly Api _api = new();
 
@@ -39,10 +39,10 @@ public class AcsDevice : Device, IMotionDevice, IDigitalIoDevice, IBufferDevice
 
     public override void Init(Dictionary<string, object?> config)
     {
-        _api.OpenCommSimulator();
-
         var hostIp = config.GetValueOrDefault("HostIP") as string;
         var hostPort = config.GetValueOrDefault("HostPort") as string;
+        if (int.TryParse(hostPort, out var port))
+            _api.OpenCommEthernetTCP(hostIp, port);
     }
 
     public override void Dispose()
@@ -244,6 +244,12 @@ public class AcsDevice : Device, IMotionDevice, IDigitalIoDevice, IBufferDevice
     public void StopBuffer(int bufferIndex)
     {
         _api.StopBuffer((ProgramBuffer)bufferIndex);
+    }
+
+    public bool IsRunningBuffer(int bufferIndex)
+    {
+        var programState = _api.GetProgramState((ProgramBuffer)bufferIndex);
+        return (programState & ProgramStates.ACSC_PST_RUN) != 0;
     }
 
     public object ReadVariable(string variable, int bufferIndex = -1,
