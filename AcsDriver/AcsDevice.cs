@@ -113,6 +113,12 @@ public class AcsDevice : Device, IMotionDevice, IDigitalIoDevice, IBufferDevice
         throw new NotImplementedException();
     }
 
+    public void JerkRatioSCurveRelativeMove(int channel, double distance, double velocity, double acceleration,
+        double deceleration, double accelJerkRatio, double decelJerkRatio)
+    {
+        throw new NotImplementedException();
+    }
+
     public void Wait(int channel)
     {
         const int threeMinutes = 3 * 60 * 1000;
