@@ -190,14 +190,12 @@ public class AcsDevice : Device, IMotionDevice, IDigitalIoDevice, IBufferDevice
 
     public bool GetNegativeLimitSensor(int channel)
     {
-        // TODO: No use case yet.
-        return false;
+        return (SafetyControlMasks.ACSC_SAFETY_LL & _api.GetFault((Axis)channel)) != 0;
     }
 
     public bool GetPositiveLimitSensor(int channel)
     {
-        // TODO: No use case yet.
-        return false;
+        return (SafetyControlMasks.ACSC_SAFETY_RL & _api.GetFault((Axis)channel)) != 0;
     }
 
     public void VelocityMove(int channel, double velocity, double acceleration, double deceleration,
