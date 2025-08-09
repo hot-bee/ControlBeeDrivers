@@ -14,7 +14,8 @@ namespace TcpVisionDriver;
 public class TcpVisionDriver : Device, IVisionDevice
 {
     private static readonly ILog Logger = LogManager.GetLogger(nameof(TcpVisionDriver));
-    private bool[,] _busy = null!;
+    private bool[,] _busyGrab = null!;
+    private bool[,] _busyResult = null!;
 
     private WatsonTcpClient _client = null!;
     private JsonObject[,] _result = null!;
@@ -77,7 +78,8 @@ public class TcpVisionDriver : Device, IVisionDevice
         var channelCount = int.Parse(config.GetValueOrDefault("ChannelCount") as string ?? "8");
         var inspectionCount = int.Parse(config.GetValueOrDefault("InspectionCount") as string ?? "16");
 
-        _busy = new bool[channelCount, inspectionCount];
+        _busyGrab = new bool[channelCount, inspectionCount];
+        _busyResult = new bool[channelCount, inspectionCount];
         _result = new JsonObject[channelCount, inspectionCount];
 
         _client = new WatsonTcpClient(ip, port);
@@ -132,8 +134,9 @@ public class TcpVisionDriver : Device, IVisionDevice
             ["InspectionIndex"] = inspectionIndex
         };
         var message = JsonSerializer.Serialize(payload);
+        _busyGrab[channel, inspectionIndex] = true;
+        _busyResult[channel, inspectionIndex] = true;
         _client.SendAsync(message);
-        _busy[channel, inspectionIndex] = true;
         Logger.Info($"Finished trigger {channel}.");
     }
 
@@ -142,7 +145,7 @@ public class TcpVisionDriver : Device, IVisionDevice
         Logger.Info($"Start wait result {channel}.");
         var stopwatch = new Stopwatch();
         stopwatch.Start();
-        while (_busy[channel, inspectionIndex])
+        while (_busyResult[channel, inspectionIndex])
         {
             if (stopwatch.ElapsedMilliseconds > timeout)
                 throw new TimeoutError();
@@ -150,6 +153,21 @@ public class TcpVisionDriver : Device, IVisionDevice
         }
 
         Logger.Info($"Finished wait result {channel}.");
+    }
+
+    public void WaitGrabEnd(int channel, int inspectionIndex, int timeout)
+    {
+        Logger.Info($"Start wait grab {channel}.");
+        var stopwatch = new Stopwatch();
+        stopwatch.Start();
+        while (_busyGrab[channel, inspectionIndex])
+        {
+            if (stopwatch.ElapsedMilliseconds > timeout)
+                throw new TimeoutError();
+            Thread.Sleep(1);
+        }
+
+        Logger.Info($"Finished wait grab {channel}.");
     }
 
     public JsonObject GetResult(int channel, int inspectionIndex)
@@ -164,8 +182,17 @@ public class TcpVisionDriver : Device, IVisionDevice
         var dict = JsonSerializer.Deserialize<JsonObject>(data)!;
         var channel = (int)dict["Channel"]!;
         var inspectionIndex = (int)dict["InspectionIndex"]!;
-        _result[channel, inspectionIndex] = dict;
-        _busy[channel, inspectionIndex] = false;
+        var type = (string)dict["Type"]!;
+        switch (type)
+        {
+            case "GrabEnd":
+                _busyGrab[channel, inspectionIndex] = false;
+                break;
+            case "Result":
+                _result[channel, inspectionIndex] = dict;
+                _busyResult[channel, inspectionIndex] = false;
+                break;
+        }
     }
 
     private void EventsOnServerDisconnected(object? sender, DisconnectionEventArgs e)
