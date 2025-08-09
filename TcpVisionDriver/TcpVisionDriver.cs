@@ -20,13 +20,14 @@ public class TcpVisionDriver : Device, IVisionDevice
     private WatsonTcpClient _client = null!;
     private JsonObject[,] _result = null!;
 
-    public void EmbedVisionView(IntPtr parentHandle)
+    public void EmbedVisionView(IntPtr parentHandle, int channel)
     {
         Logger.Info("Send a request to embed vision view.");
         var payload = new Dict
         {
             ["Name"] = "EmbedVision",
-            ["Parent"] = parentHandle.ToInt64()
+            ["Parent"] = parentHandle.ToInt64(),
+            ["Channel"] = channel
         };
         var message = JsonSerializer.Serialize(payload);
         _client.SendAsync(message);
