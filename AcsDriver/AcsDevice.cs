@@ -97,6 +97,16 @@ public class AcsDevice : Device, IMotionDevice, IDigitalIoDevice, IBufferDevice
         double deceleration,
         double accelJerkRatio, double decelJerkRatio)
     {
+        if (IsMoving(channel))
+        {
+            Logger.Info($"Override position. Channel: {channel}, Position: {position}");
+            WriteVariable(position, "OverridePos");
+            RunBuffer(channel, "MoveOverride");
+            while (IsRunningBuffer(channel))
+                Thread.Sleep(1);
+            return;
+        }
+
         var accelTime = velocity / acceleration;
         var jerk = velocity / accelJerkRatio / (accelTime * accelTime);
         _api.SetVelocity((Axis)channel, velocity);
