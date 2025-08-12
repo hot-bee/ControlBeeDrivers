@@ -4,11 +4,39 @@ using log4net;
 
 namespace AcsDriver;
 
-public class AcsDevice : Device, IMotionDevice, IDigitalIoDevice, IBufferDevice
+public class AcsDevice : Device, IMotionDevice, IDigitalIoDevice, IBufferDevice, ITransactionDevice
 {
     private const int BitsPerSlot = 8;
     private static readonly ILog Logger = LogManager.GetLogger(nameof(AcsDevice));
     private readonly Api _api = new();
+
+    public void RunBuffer(int bufferIndex, string label)
+    {
+        _api.RunBuffer((ProgramBuffer)bufferIndex, label);
+    }
+
+    public void StopBuffer(int bufferIndex)
+    {
+        _api.StopBuffer((ProgramBuffer)bufferIndex);
+    }
+
+    public bool IsRunningBuffer(int bufferIndex)
+    {
+        var programState = _api.GetProgramState((ProgramBuffer)bufferIndex);
+        return (programState & ProgramStates.ACSC_PST_RUN) != 0;
+    }
+
+    public object ReadVariable(string variable, int bufferIndex = -1,
+        int from1 = -1, int to1 = -1, int from2 = -1, int to2 = -1)
+    {
+        return _api.ReadVariable(variable, (ProgramBuffer)bufferIndex, from1, to1, from2, to2);
+    }
+
+    public void WriteVariable(object value, string variable, int bufferIndex = -1,
+        int from1 = -1, int to1 = -1, int from2 = -1, int to2 = -1)
+    {
+        _api.WriteVariable(value, variable, (ProgramBuffer)bufferIndex, from1, to1, from2, to2);
+    }
 
     public bool GetDigitalInputBit(int channel)
     {
@@ -250,31 +278,8 @@ public class AcsDevice : Device, IMotionDevice, IDigitalIoDevice, IBufferDevice
         throw new NotImplementedException();
     }
 
-    public void RunBuffer(int bufferIndex, string label)
+    public void SendCommand(string command)
     {
-        _api.RunBuffer((ProgramBuffer)bufferIndex, label);
-    }
-
-    public void StopBuffer(int bufferIndex)
-    {
-        _api.StopBuffer((ProgramBuffer)bufferIndex);
-    }
-
-    public bool IsRunningBuffer(int bufferIndex)
-    {
-        var programState = _api.GetProgramState((ProgramBuffer)bufferIndex);
-        return (programState & ProgramStates.ACSC_PST_RUN) != 0;
-    }
-
-    public object ReadVariable(string variable, int bufferIndex = -1,
-        int from1 = -1, int to1 = -1, int from2 = -1, int to2 = -1)
-    {
-        return _api.ReadVariable(variable, (ProgramBuffer)bufferIndex, from1, to1, from2, to2);
-    }
-
-    public void WriteVariable(object value, string variable, int bufferIndex = -1,
-        int from1 = -1, int to1 = -1, int from2 = -1, int to2 = -1)
-    {
-        _api.WriteVariable(value, variable, (ProgramBuffer)bufferIndex, from1, to1, from2, to2);
+        _api.Transaction(command);
     }
 }
